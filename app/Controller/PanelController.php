@@ -8,12 +8,6 @@
 
 class PanelController extends AppController
 {
-    public function beforeFilter()
-    {
-        parent::beforeFilter();
-        $this->set('Auth', $this->Auth);
-    }
-
     public function index()
     {
 //        die(var_dump($this->Auth->user()));

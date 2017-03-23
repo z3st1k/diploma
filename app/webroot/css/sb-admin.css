@@ -235,3 +235,21 @@ a.navbar-brand {
     text-transform: uppercase;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
+@media (min-width: 768px){
+    .container {
+        width: 515px;
+    }
+}
+
+@media (min-width: 992px){
+    .container {
+        width: 740px;
+    }
+}
+
+@media (min-width: 1200px){
+    .container {
+        width: 948px;
+    }
+}
