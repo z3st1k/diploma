@@ -69,6 +69,8 @@ class HomesController extends AppController
                 "username" => $this->request->data["username"],
                 "password" => $this->request->data["password"],
                 "email" => $this->request->data["email"],
+                "name" => $this->request->data["name"],
+                "surname" => $this->request->data["surname"],
                 "uuid" => $this->request->data["uuid"],
                 "active" => false,
                 "dateRegister" => time(),

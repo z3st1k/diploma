@@ -19,6 +19,8 @@
 <div class="loginmodal-container container">
     <h1>Create Your Account</h1><br>
     <form id="signup-form">
+        <input type="text" name="name" placeholder="First Name">
+        <input type="text" name="surname" placeholder="Last Name">
         <input type="text" name="username" placeholder="Username">
         <input type="password" name="password" id="sign-password" placeholder="Password">
         <input type="password" name="confirmPassword" placeholder="Confirm Password">
@@ -32,6 +34,16 @@
         e.preventDefault();
     }).validate({
         rules: {
+            name: {
+                required: true,
+                lettersonly: true,
+                minlength: 1,
+            },
+            surname: {
+                required: true,
+                lettersonly: true,
+                minlength: 1,
+            },
             username: {
                 required: true,
                 alphanumeric: true,
