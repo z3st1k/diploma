@@ -169,3 +169,18 @@ a.navbar-brand {
     text-transform: uppercase;
     font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
 }
+
+.avatar {
+    max-width: 200px;
+    max-height: 200px;
+    margin: 0 auto;
+}
+
+.block {
+    padding: 10px 0px;
+}
+
+textarea {
+    resize: none;
+    min-height: 100px;
+}

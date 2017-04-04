@@ -10,11 +10,5 @@ class PanelController extends AppController
 {
     public function index()
     {
-//        die(var_dump($this->Auth->user()));
-    }
-
-    public function profile()
-    {
-
     }
 }

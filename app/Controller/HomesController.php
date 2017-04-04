@@ -91,8 +91,16 @@ class HomesController extends AppController
         $this->autoRender = false;
 
         if ($this->request->is("post")) {
+            $conditions = $this->request->data;
+
+            if ($this->Auth->user() && is_array($conditions)) {
+                $conditions["NOT"] = array(
+                    'id' => $this->Auth->user('id')
+                );
+            }
+
             $result = $this->User->find('count', array(
-                'conditions' => $this->request->data
+                'conditions' => $conditions
             ));
 
             return $result > 0 ? 'false' : 'true';
