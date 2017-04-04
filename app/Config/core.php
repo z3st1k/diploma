@@ -356,7 +356,7 @@
 $engine = 'File';
 
 // In development mode, caches should expire quickly.
-$duration = '+999 days';
+$duration = '+1 seconds';
 if (Configure::read('debug') > 0) {
 	$duration = '+10 seconds';
 }
@@ -387,3 +387,5 @@ Cache::config('_cake_model_', array(
 	'serialize' => ($engine === 'File'),
 	'duration' => $duration
 ));
+
+Configure::write('uploadPath', APP . 'webroot');

@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<html lang="en">
 <head>
 	<?php echo $this->Html->charset(); ?>
 	<title>
@@ -12,8 +10,11 @@
 	echo $this->fetch('meta');
 
 	echo $this->Html->css('bootstrap.min');
+	echo $this->Html->css('bootstrap-select.min');
 	echo $this->Html->css('font-awesome.min');
 	echo $this->Html->css('sb-admin');
+	echo $this->Html->css('notify');
+	echo $this->Html->css('full');
 	?>
 	<link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
@@ -21,6 +22,10 @@
 	<?php
 	echo $this->Html->script('jquery-3.1.1');
 	echo $this->Html->script('bootstrap.min');
+	echo $this->Html->script('bootstrap-select');
+	echo $this->Html->script('jquery.validate.min');
+	echo $this->Html->script('jquery.additional.validate');
+	echo $this->Html->script('notify');
 	?>
 
 </head>
@@ -99,7 +104,7 @@
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $Auth->user('username'); ?> <b class="caret"></b></a>
 				<ul class="dropdown-menu">
 					<li>
-						<a href="<?php echo $this->webroot; ?>panel/profile">
+						<a href="<?php echo $this->webroot; ?>user/profile">
 							<i class="fa fa-fw fa-user"></i> Profile
 						</a>
 					</li>
@@ -119,43 +124,98 @@
 			</li>
 		</ul>
 		<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+
+		<?php
+		$leftItems = array(
+			array(
+				'label' => "Dashboard",
+				'url'   => "panel/index",
+				'icon'  => "fa-dashboard"
+			),
+			array(
+				'label' => "Deals",
+				'url'   => "deals/index",
+				'icon'  => "fa-handshake-o"
+			),
+//			array(
+//				'label'    => "Origination",
+//				'icon'     => "fa-phone-square",
+//				'subItems' => array(
+//					array(
+//						'label' => "Order New Number",
+//						'url'   => "did_client/orderNewNumber",
+//						'icon'  => "fa-phone-square"
+//					),
+//					array(
+//						'label' => "Trunk Groups",
+//						'url'   => "did_client/trunkGroups",
+//						'icon'  => "fa-cog"
+//					),
+//					array(
+//						'label' => "My DIDs",
+//						'url'   => "did_client/dids",
+//						'icon'  => "fa-phone-square"
+//					),
+//					array(
+//						'label' => "Reports",
+//						'url'   => "did_client/reports",
+//						'icon'  => "fa-bar-chart-o"
+//					),
+//					array(
+//						'label' => "CDR",
+//						'url'   => "did_client/cdr",
+//						'icon'  => "fa-phone-square"
+//					)
+//				)
+//			)
+		);
+		?>
+
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav side-nav">
-				<li>
-					<a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
-				</li>
-				<li>
-					<a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
-				</li>
-				<li class="active">
-					<a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
-				</li>
-				<li>
-					<a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
-				</li>
-				<li>
-					<a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
-				</li>
-				<li>
-					<a href="bootstrap-grid.html"><i class="fa fa-fw fa-wrench"></i> Bootstrap Grid</a>
-				</li>
-				<li>
-					<a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
-					<ul id="demo" class="collapse">
-						<li>
-							<a href="#">Dropdown Item</a>
-						</li>
-						<li>
-							<a href="#">Dropdown Item</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
-				</li>
-				<li>
-					<a href="index-rtl.html"><i class="fa fa-fw fa-dashboard"></i> RTL Dashboard</a>
-				</li>
+				<?php
+				$index = 0;
+				$activeItem = $this->params['controller'] . '/' . $this->params['action'];
+				foreach ($leftItems as $item) {
+					?>
+					<li <?php echo $item['url'] == $activeItem ? "class='active'" : ""; ?> >
+						<?php
+						if (isset($item['subItems'])) {
+							?>
+							<a href="javascript:;" data-toggle="collapse" data-target="#demo<?php echo $index; ?>"><i class="fa fa-fw <?php echo $item['icon']; ?>"></i> <?php echo $item['label']; ?> <i class="fa fa-fw fa-caret-down"></i></a>
+							<?php
+							$isOpened = false;
+
+							foreach ($item['subItems'] as $subItem) {
+								if ($subItem['url'] == $activeItem) {
+									$isOpened = true;
+									break;
+								}
+							}
+							?>
+							<ul id="demo<?php echo $index; ?>" class="collapse <?php echo $isOpened ? 'in': ''; ?>">
+								<?php
+								foreach ($item['subItems'] as $subItem) {
+									?>
+									<li <?php echo $subItem['url'] == $activeItem ? "class='active'" : ""; ?> >
+										<a href="<?php echo $this->webroot . $subItem['url']; ?>"><i class="fa <?php echo $subItem['icon']; ?>"></i> <?php echo $subItem['label']; ?></a>
+									</li>
+									<?php
+								}
+								?>
+							</ul>
+							<?php
+						} else {
+							?>
+							<a href="<?php echo $this->webroot . $item['url']; ?>"><i class="fa fa-fw <?php echo $item['icon']; ?>"></i> <?php echo $item['label']; ?></a>
+							<?php
+						}
+						$index++;
+						?>
+					</li>
+					<?php
+				}
+				?>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
@@ -165,10 +225,41 @@
 		<?php echo $this->fetch('content'); ?>
 	</div>
 	<!-- /#page-wrapper -->
-
 </div>
 
 <?php echo $this->fetch('sql_dump'); ?>
+
+<!--    Flash messages-->
+<?php
+$flashMessage = $this->Flash->render();
+if (!empty($flashMessage)):
+	$flashData = json_decode($flashMessage, true);
+	switch ($flashData['code']) {
+		case '101':
+			$flashData['type'] = 'danger';
+			$flashData['icon'] = 'close';
+			break;
+		case '201':
+			$flashData['type'] = 'success';
+			$flashData['icon'] = 'check';
+			break;
+		case '301':
+			$flashData['type'] = 'info';
+			$flashData['icon'] = 'exclamation';
+			break;
+	}
+	?>
+	<script>
+		$(document).ready(function () {
+			$.notify("<?php echo $flashData['message']; ?>", {
+				align: "left",
+				verticalAlign: "top",
+				type: "<?php echo $flashData['type']; ?>",
+				icon: "<?php echo $flashData['icon']; ?>"
+			});
+		});
+	</script>
+<?php endif; ?>
 
 </body>
 
