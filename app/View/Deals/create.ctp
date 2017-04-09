@@ -13,7 +13,7 @@
             <div class="form-group">
                 <label class="col-lg-3 control-label">Partner:</label>
                 <div class="col-lg-6">
-                    <select name="partnerId" class="selectpicker" id="">
+                    <select name="partnerId" class="selectpicker" id="" data-live-search="true">
                         <option></option>
                         <?php foreach ($users as $user): ?>
                             <option value="<?php echo $user['User']['id']; ?>"><?php echo $user['User']['username']; ?></option>
@@ -37,3 +37,16 @@
         </form>
     </div>
 </div>
+
+<script>
+    $("#profileForm").validate({
+        rules: {
+            name: {
+                required: true
+            },
+            partnerId: {
+                required: true
+            }
+        }
+    });
+</script>
