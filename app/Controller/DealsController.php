@@ -13,7 +13,35 @@ class DealsController extends AppController
 
     public function index()
     {
-        $deals = $this->Deal->find('all');
+        Configure::write('debug', 2);
+
+        $deals = $this->Deal->find('all', array(
+            'fields' => array(
+                'Deal.id',
+                'Deal.name',
+                'Deal.statement',
+                'Deal.customerId',
+                'Deal.sellerId',
+                'User.username'
+            ),
+            'conditions' => array(
+                'OR' => array(
+                    'customerId' => $this->Auth->user('id'),
+                    'sellerId' => $this->Auth->user('id')
+                )
+            ),
+            'order' => array('dateCreate DESC'),
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'left',
+                    'conditions' => array(
+                        '(User.id = Deal.sellerId OR User.id = Deal.customerId) AND User.id <> ' . $this->Auth->user('id')
+                    )
+                )
+            )
+        ));
 
         $this->set('deals', $deals);
     }
@@ -24,9 +52,38 @@ class DealsController extends AppController
             'conditions' => array(
                 'NOT' => array(
                     'id' => $this->Auth->user('id')
-                )
+                ),
+                'active' => 1
             )
         ));
+
+        if ($this->request->is('post')) {
+            $saveData = array(
+                'name' => $this->request->data['name'],
+                'sellerId' => $this->Auth->user('id'),
+                'customerId' => $this->request->data['partnerId'],
+                'description' => $this->request->data['description'],
+                'dateCreate' => time()
+            );
+
+            $result = $this->Deal->save($saveData);
+
+            if (!$result) {
+                $this->Flash->set("Create failed. Please try again", array(
+                    'params' => array(
+                        'code' => 101
+                    )
+                ));
+            } else {
+                $this->Flash->set("Deal has been created successfully.", array(
+                    'params' => array(
+                        'code' => 201
+                    )
+                ));
+
+                $this->redirect('/deals/index');
+            }
+        }
 
         $this->set('users', $users);
     }

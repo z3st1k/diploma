@@ -227,7 +227,7 @@
 	<!-- /#page-wrapper -->
 </div>
 
-<?php echo $this->fetch('sql_dump'); ?>
+<?php //echo $this->element('sql_dump'); ?>
 
 <!--    Flash messages-->
 <?php

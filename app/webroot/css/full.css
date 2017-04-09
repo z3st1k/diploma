@@ -184,3 +184,14 @@ textarea {
     resize: none;
     min-height: 100px;
 }
+
+ul.nav.nav-tabs {
+    margin-top: 20px;
+}
+
+ul.nav.nav-tabs li a {
+    text-transform: uppercase;
+}
+ul.nav.nav-tabs li.active a {
+    font-weight: 600;
+}
