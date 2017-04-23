@@ -2,6 +2,10 @@
     <h1>Creating New Deal</h1>
     <hr>
     <div class="row">
+        <div class="alert alert-info">
+            <strong>Info!</strong> After creating the deal, you will be the seller.
+        </div>
+
         <form class="form-horizontal" role="form" method="post" id="profileForm" enctype="multipart/form-data">
             <div class="form-group">
                 <label class="col-lg-3 control-label">Name:</label>
