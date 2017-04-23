@@ -10,6 +10,7 @@ class DealsController extends AppController
 {
 
     var $uses = array('User', 'Deal');
+    var $helpers = array('Deal');
 
     public function index()
     {
@@ -22,6 +23,7 @@ class DealsController extends AppController
                 'Deal.statement',
                 'Deal.customerId',
                 'Deal.sellerId',
+                'Deal.dateCreate',
                 'User.username'
             ),
             'conditions' => array(
@@ -86,5 +88,50 @@ class DealsController extends AppController
         }
 
         $this->set('users', $users);
+    }
+
+    public function view($encodedId = null)
+    {
+        if (empty($encodedId)) {
+            throw new NotFoundException();
+        }
+
+        $id = base64_decode($encodedId);
+
+        $deal = $this->Deal->find('first', array(
+            'fields' => array(
+                'Deal.id',
+                'Deal.name',
+                'Deal.statement',
+                'Deal.customerId',
+                'Deal.sellerId',
+                'Deal.dateCreate',
+                'User.username'
+            ),
+            'conditions' => array(
+                'Deal.id' => $id,
+                'OR' => array(
+                    'Deal.customerId' => $this->Auth->user('id'),
+                    'Deal.sellerId' => $this->Auth->user('id')
+                )
+            ),
+            'order' => array('dateCreate DESC'),
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'inner',
+                    'conditions' => array(
+                        '(User.id = Deal.sellerId OR User.id = Deal.customerId) AND User.id <> ' . $this->Auth->user('id')
+                    )
+                )
+            )
+        ));
+
+        if (empty($deal)) {
+            throw new NotFoundException();
+        }
+
+        $this->set('deal', $deal);
     }
 }
