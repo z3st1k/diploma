@@ -21,3 +21,38 @@ $.fn.serializeObject = function() {
     $.each($.map(this.serializeArray(), elementMapper), appendToResult);
     return o;
 };
+
+function changeDealStatus(url, dealId, $status) {
+    $.ajax({
+        url: url + "deals/changeStatus",
+        data: {
+            status: $status,
+            id: dealId
+        },
+        method: 'POST',
+        success: function (response) {
+            var data = $.parseJSON(response);
+
+            if (data.code == 201) {
+                $.notify(data.msg, {
+                    align: "left",
+                    verticalAlign: "top",
+                    type: "success",
+                    icon: "check"
+                });
+
+                setTimeout(function () {
+                    location.reload();
+                }, 1000);
+            } else if (data.code == 101) {
+                $.notify(data.msg, {
+                    align: "left",
+                    verticalAlign: "top",
+                    type: "danger",
+                    icon: "close"
+                });
+            }
+
+        }
+    });
+}

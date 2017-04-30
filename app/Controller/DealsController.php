@@ -65,6 +65,7 @@ class DealsController extends AppController
                 'sellerId' => $this->Auth->user('id'),
                 'customerId' => $this->request->data['partnerId'],
                 'description' => $this->request->data['description'],
+                'amount' => $this->request->data['amount'],
                 'dateCreate' => time()
             );
 
@@ -106,6 +107,8 @@ class DealsController extends AppController
                 'Deal.customerId',
                 'Deal.sellerId',
                 'Deal.dateCreate',
+                'Deal.amount',
+                'Deal.description',
                 'User.username'
             ),
             'conditions' => array(
@@ -133,5 +136,69 @@ class DealsController extends AppController
         }
 
         $this->set('deal', $deal);
+    }
+
+    public function changeStatus()
+    {
+        Configure::write('debug', 2);
+        $this->autoRender = false;
+        $this->autoLayout = false;
+
+        if ($this->request->is('post')) {
+            $return = array(
+                'code' => 101,
+                'msg' => 'Operation not permitted'
+            );
+            $id = $this->request->data['id'];
+            $currentUserId = $this->Auth->user('id');
+
+            $deal = $this->Deal->find('first', array(
+                'conditions' => array(
+                    'id' => $id,
+                    'OR' => array(
+                        'sellerId' => $currentUserId,
+                        'customerId' => $currentUserId
+                    )
+                )
+            ));
+
+            if (!empty($deal)) {
+                $status = $this->request->data['status'];
+                $customerActions = array('1', '2', '4', '5', '6');
+                $sellerActions = array('3', '6');
+
+                if (($currentUserId == $deal['Deal']['sellerId'] && in_array($status, $sellerActions) ||
+                    $currentUserId == $deal['Deal']['customerId'] && in_array($status, $customerActions)) &&
+                    $status > $deal['Deal']['statement']) {
+
+                    $saveResult = false;
+
+                    switch ($status) {
+                        case '1':
+                            if ($deal['Deal']['statement'] == 0) {
+                                $deal['Deal']['statement'] = 1;
+                                $saveResult = $this->Deal->save($deal);
+                            }
+                            break;
+                        case '5':
+                            if ($deal['Deal']['statement'] == 0 || $deal['Deal']['statement'] == 1) {
+                                $deal['Deal']['statement'] = 5;
+                                $saveResult = $this->Deal->save($deal);
+                            }
+                            break;
+                    }
+
+                    if ($saveResult) {
+                        $return = array(
+                            'code' => 201,
+                            'msg' => 'Successfully'
+                        );
+                    }
+                }
+            }
+
+            return json_encode($return);
+        }
+        exit;
     }
 }

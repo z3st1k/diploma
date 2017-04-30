@@ -144,4 +144,53 @@ class DealHelper extends AppHelper
 
         return $html;
     }
+
+    public function getHtmlAction($deal, $userId)
+    {
+        switch ($deal['Deal']['statement']) {
+            case '0':
+                if ($deal['Deal']['customerId'] == $userId) {
+                    return $this->_View->element('Deals/accepting_deal', array('Deal' => $deal));
+                } else {
+                    $message = "Waiting for accepting deal from your partner.";
+                    return $this->_View->element('Deals/info_message', array('message' => $message));
+                }
+                break;
+            case '1':
+                if ($deal['Deal']['customerId'] == $userId) {
+                    return $this->_View->element('Deals/reserving_money', array('Deal' => $deal));
+                } else {
+                    $message = "Waiting for reserving money from your partner.";
+                    return $this->_View->element('Deals/info_message', array('message' => $message));
+                }
+
+                break;
+            case '2':
+
+                break;
+            case '3':
+
+                break;
+            case '4':
+
+                break;
+            case '5':
+                if ($deal['Deal']['customerId'] == $userId) {
+                    $message = "You canceled that deal.";
+                } else {
+                    $message = "Your partner canceled that deal.";
+                }
+                return $this->_View->element('Deals/info_message', array('message' => $message));
+                break;
+            case '6':
+
+                break;
+            case '7':
+
+                break;
+            case '8':
+
+                break;
+        }
+    }
 }
