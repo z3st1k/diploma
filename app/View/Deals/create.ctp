@@ -27,6 +27,13 @@
             </div>
 
             <div class="form-group">
+                <label class="col-lg-3 control-label">Amount:</label>
+                <div class="col-lg-6">
+                    <input name="amount" class="form-control" type="text" value="0">
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="col-lg-3 control-label">Description:</label>
                 <div class="col-lg-6">
                     <textarea name="description" class="form-control"></textarea>
@@ -50,6 +57,14 @@
             },
             partnerId: {
                 required: true
+            },
+            amount: {
+                required: true,
+                digits: true,
+                min: 100
+            },
+            description: {
+                maxlength: 500
             }
         }
     });

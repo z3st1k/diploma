@@ -6,7 +6,7 @@
  * Time: 0:47
  */
 
-class DealModel extends AppModel
+class Deal extends AppModel
 {
     var $useTable = "deals";
 }
