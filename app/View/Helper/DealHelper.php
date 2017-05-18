@@ -149,14 +149,17 @@ class DealHelper extends AppHelper
     {
         switch ($deal['Deal']['statement']) {
             case '0':
+
                 if ($deal['Deal']['customerId'] == $userId) {
                     return $this->_View->element('Deals/accepting_deal', array('Deal' => $deal));
                 } else {
                     $message = "Waiting for accepting deal from your partner.";
                     return $this->_View->element('Deals/info_message', array('message' => $message));
                 }
+
                 break;
             case '1':
+
                 if ($deal['Deal']['customerId'] == $userId) {
                     return $this->_View->element('Deals/reserving_money', array('Deal' => $deal));
                 } else {
@@ -167,28 +170,63 @@ class DealHelper extends AppHelper
                 break;
             case '2':
 
+                if ($deal['Deal']['customerId'] == $userId) {
+                    $message = "Waiting for sending product from your partner.";
+                    $layout = $this->_View->element('Deals/arbitration_info');
+                    $layout .= $this->_View->element('Deals/info_message', array('message' => $message));
+                    return $layout;
+                } else {
+                    return $this->_View->element('Deals/sending_product', array('Deal' => $deal));
+                }
+
                 break;
             case '3':
+
+                if ($deal['Deal']['customerId'] == $userId) {
+                    $layout = $this->_View->element('Deals/arbitration_info');
+                    $layout .= $this->_View->element('Deals/receiving_product', array('Deal' => $deal));
+                    return $layout;
+                } else {
+                    $message = "Waiting for confirmation of receipt of the product from your partner.";
+                    $layout = $this->_View->element('Deals/arbitration_info');
+                    $layout .= $this->_View->element('Deals/info_message', array('message' => $message));
+                    return $layout;
+                }
 
                 break;
             case '4':
 
+                $message = "Deal finished successfully.";
+                return $this->_View->element('Deals/info_message', array('message' => $message));
+
                 break;
             case '5':
+
                 if ($deal['Deal']['customerId'] == $userId) {
                     $message = "You canceled that deal.";
                 } else {
                     $message = "Your partner canceled that deal.";
                 }
+
                 return $this->_View->element('Deals/info_message', array('message' => $message));
+
                 break;
             case '6':
+
+                $message = "The deal is in consideration of arbitration.";
+                return $this->_View->element('Deals/info_message', array('message' => $message));
 
                 break;
             case '7':
 
+                $message = "Decision of arbitration in favor of the buyer.";
+                return $this->_View->element('Deals/info_message', array('message' => $message));
+
                 break;
             case '8':
+
+                $message = "Decision of arbitration in favor of the seller.";
+                return $this->_View->element('Deals/info_message', array('message' => $message));
 
                 break;
         }

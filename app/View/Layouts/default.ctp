@@ -22,6 +22,7 @@
 	<?php
 	echo $this->Html->script('jquery-3.1.1');
 	echo $this->Html->script('bootstrap.min');
+	echo $this->Html->script('bootbox.min');
 	echo $this->Html->script('bootstrap-select');
 	echo $this->Html->script('jquery.validate.min');
 	echo $this->Html->script('jquery.additional.validate');
