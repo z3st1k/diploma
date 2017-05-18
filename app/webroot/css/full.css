@@ -22,7 +22,7 @@ ul.color-white, ul.color-white li, ul.color-white li a, .navbar-inverse ul.color
     float: right;
 }
 
-.right::after {
+.right:after {
     clear: both;
 }
 
@@ -552,4 +552,14 @@ div.center-boxes div label, #deal-description{
 
 div.buttons {
     margin-top: 20px;
+}
+
+.alert-buttons span {
+    line-height: 34px;
+}
+
+.alert-buttons > div:after {
+    clear: both;
+    content: '';
+    display: table;
 }

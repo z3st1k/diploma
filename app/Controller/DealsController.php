@@ -168,21 +168,87 @@ class DealsController extends AppController
                 $sellerActions = array('3', '6');
 
                 if (($currentUserId == $deal['Deal']['sellerId'] && in_array($status, $sellerActions) ||
-                    $currentUserId == $deal['Deal']['customerId'] && in_array($status, $customerActions)) &&
-                    $status > $deal['Deal']['statement']) {
+                        $currentUserId == $deal['Deal']['customerId'] && in_array($status, $customerActions)) &&
+                    $status > $deal['Deal']['statement']
+                ) {
 
                     $saveResult = false;
 
                     switch ($status) {
                         case '1':
+
                             if ($deal['Deal']['statement'] == 0) {
                                 $deal['Deal']['statement'] = 1;
                                 $saveResult = $this->Deal->save($deal);
                             }
+
+                            break;
+                        case '2':
+
+                            if ($deal['Deal']['statement'] == 1) {
+
+                                $deal['Deal']['statement'] = 2;
+                                $user = $this->User->find('first', array(
+                                    'conditions' => array(
+                                        'id' => $this->Auth->user('id')
+                                    )
+                                ));
+                                $fee = 5;
+                                $max = 5000;
+                                $amountFee = $deal['Deal']['amount'] * ($fee / 100);
+                                $amountFee = $amountFee > $max ? $max : $amountFee;
+                                $resultAmount = $deal['Deal']['amount'] + $amountFee;
+
+                                if ($user['User']['balance'] >= $resultAmount) {
+                                    $user['User']['balance'] = $user['User']['balance'] - $resultAmount;
+
+                                    $this->Deal->begin();
+                                    $save = $this->User->decreaseBalance($user['User']['id'], $resultAmount);
+
+                                    if ($save) {
+                                        $deal['Deal']['resultAmount'] = $resultAmount;
+                                        $save = $this->Deal->save($deal);
+
+                                        if ($save !== false) {
+                                            $this->Deal->commit();
+                                            $saveResult = true;
+                                        } else {
+                                            $this->Deal->rollback();
+                                        }
+                                    } else {
+                                        $this->Deal->rollback();
+                                    }
+                                }
+                            }
+
+                            break;
+                        case '3':
+
+                            if ($deal['Deal']['statement'] == 2) {
+                                $deal['Deal']['statement'] = 3;
+                                $saveResult = $this->Deal->save($deal);
+                            }
+                            break;
+                        case '4':
+
+                            if ($deal['Deal']['statement'] == 3) {
+                                $deal['Deal']['statement'] = 4;
+                                $saveResult = $this->Deal->save($deal);
+                            }
                             break;
                         case '5':
+
                             if ($deal['Deal']['statement'] == 0 || $deal['Deal']['statement'] == 1) {
                                 $deal['Deal']['statement'] = 5;
+                                $saveResult = $this->Deal->save($deal);
+                            }
+
+                            break;
+                        case '6':
+                            $statements = array('2', '3');
+
+                            if (in_array($deal['Deal']['statement'], $statements)) {
+                                $deal['Deal']['statement'] = 6;
                                 $saveResult = $this->Deal->save($deal);
                             }
                             break;
