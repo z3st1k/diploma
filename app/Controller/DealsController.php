@@ -9,7 +9,7 @@
 class DealsController extends AppController
 {
 
-    var $uses = array('User', 'Deal');
+    var $uses = array('User', 'Deal', 'DealMessages');
     var $helpers = array('Deal');
 
     public function index()
@@ -135,6 +135,25 @@ class DealsController extends AppController
             throw new NotFoundException();
         }
 
+        $messages = $this->DealMessages->find('all', array(
+            'fields' => array('DealMessages.message', 'DealMessages.senderId', 'DealMessages.date', 'User.name', 'User.surname', 'User.avatar'),
+            'conditions' => array(
+                'dealId' => $id
+            ),
+            'order' => 'DealMessages.id DESC',
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'inner',
+                    'conditions' => array(
+                        '(User.id = DealMessages.senderId)'
+                    )
+                )
+            )
+        ));
+
+        $this->set('messages', $messages);
         $this->set('deal', $deal);
     }
 
@@ -229,11 +248,24 @@ class DealsController extends AppController
                                 $saveResult = $this->Deal->save($deal);
                             }
                             break;
+
                         case '4':
 
                             if ($deal['Deal']['statement'] == 3) {
                                 $deal['Deal']['statement'] = 4;
-                                $saveResult = $this->Deal->save($deal);
+                                $this->Deal->begin();
+
+                                $save = $this->User->increaseBalance($deal['Deal']['sellerId'], $deal['Deal']['amount']);
+
+                                if ($save) {
+                                    $saveResult = $this->Deal->save($deal);
+
+                                    if ($saveResult) {
+                                        $this->Deal->commit();
+                                    } else {
+                                        $this->Deal->rollback();
+                                    }
+                                }
                             }
                             break;
                         case '5':
@@ -266,5 +298,37 @@ class DealsController extends AppController
             return json_encode($return);
         }
         exit;
+    }
+
+    public function ajaxMessage()
+    {
+        Configure::write("debug", 0);
+        $this->autoRender = false;
+        $this->autoLayout = false;
+
+        if ($this->request->is('post')) {
+            $save = array(
+                'dealId' => $this->request->data['dealId'],
+                'senderId' => $this->Auth->user('id'),
+                'date' => time(),
+                'message' => $this->request->data['message']
+            );
+
+            $result = $this->DealMessages->save($save);
+
+            if ($result) {
+                $return = array(
+                    'code' => 201,
+                    'msg' => 'Successfully'
+                );
+            } else {
+                $return = array(
+                    'code' => 101,
+                    'msg' => 'Failed'
+                );
+            }
+
+            return json_encode($return);
+        }
     }
 }
