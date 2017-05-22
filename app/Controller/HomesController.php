@@ -79,13 +79,14 @@ class HomesController extends AppController
             ));
 
             $result = $this->User->save($save);
+
             $this->mailConfirm($result['User']['id']);
 
             return $result !== false ? true : false;
         }
     }
 
-    public function checkUser()
+    public function checkUser($checkForNot = 1)
     {
         $this->layout = false;
         $this->autoRender = false;
@@ -93,7 +94,7 @@ class HomesController extends AppController
         if ($this->request->is("post")) {
             $conditions = $this->request->data;
 
-            if ($this->Auth->user() && is_array($conditions)) {
+            if ($checkForNot == 1 && $this->Auth->user() && is_array($conditions)) {
                 $conditions["NOT"] = array(
                     'id' => $this->Auth->user('id')
                 );
@@ -147,6 +148,8 @@ class HomesController extends AppController
         $body = "Hello {$user['User']['username']}!\r\n";
         $body .= "You successfully registered on Gooddeal.\r\n";
         $body .= "To accepting your account please check this link: <a href='{$link}'>{$link}</a>";
+
+        $Email->send($body);
 
         return $Email->send($body);
     }

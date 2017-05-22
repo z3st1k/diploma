@@ -52,61 +52,63 @@
 		</div>
 		<!-- Top Menu Items -->
 		<ul class="nav navbar-right top-nav">
-			<li class="dropdown">
-				<a href="#" class="color-white">
-					Balance: <?php echo number_format($userBalance, 2); ?> UAH
-				</a>
-			</li>
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
-				<ul class="dropdown-menu message-dropdown">
-					<li class="message-preview">
-						<a href="#">
-							<div class="media">
-                                    <span class="pull-left">
-                                        <img class="media-object" src="http://placehold.it/50x50" alt="">
-                                    </span>
-								<div class="media-body">
-									<h5 class="media-heading"><strong></strong>
-									</h5>
-									<p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
-									<p>Lorem ipsum dolor sit amet, consectetur...</p>
+			<?php if ($Auth->user('role') == 1): ?>
+				<li class="dropdown">
+					<a href="#" class="color-white">
+						Balance: <?php echo number_format($userBalance, 2); ?> UAH
+					</a>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> <b class="caret"></b></a>
+					<ul class="dropdown-menu message-dropdown">
+						<li class="message-preview">
+							<a href="#">
+								<div class="media">
+										<span class="pull-left">
+											<img class="media-object" src="http://placehold.it/50x50" alt="">
+										</span>
+									<div class="media-body">
+										<h5 class="media-heading"><strong></strong>
+										</h5>
+										<p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
+										<p>Lorem ipsum dolor sit amet, consectetur...</p>
+									</div>
 								</div>
-							</div>
-						</a>
-					</li>
-					<li class="message-footer">
-						<a href="#">Read All New Messages</a>
-					</li>
-				</ul>
-			</li>
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
-				<ul class="dropdown-menu alert-dropdown">
-					<li>
-						<a href="#">Alert Name <span class="label label-default">Alert Badge</span></a>
-					</li>
-					<li>
-						<a href="#">Alert Name <span class="label label-primary">Alert Badge</span></a>
-					</li>
-					<li>
-						<a href="#">Alert Name <span class="label label-success">Alert Badge</span></a>
-					</li>
-					<li>
-						<a href="#">Alert Name <span class="label label-info">Alert Badge</span></a>
-					</li>
-					<li>
-						<a href="#">Alert Name <span class="label label-warning">Alert Badge</span></a>
-					</li>
-					<li>
-						<a href="#">Alert Name <span class="label label-danger">Alert Badge</span></a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="#">View All</a>
-					</li>
-				</ul>
-			</li>
+							</a>
+						</li>
+						<li class="message-footer">
+							<a href="#">Read All New Messages</a>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+					<ul class="dropdown-menu alert-dropdown">
+						<li>
+							<a href="#">Alert Name <span class="label label-default">Alert Badge</span></a>
+						</li>
+						<li>
+							<a href="#">Alert Name <span class="label label-primary">Alert Badge</span></a>
+						</li>
+						<li>
+							<a href="#">Alert Name <span class="label label-success">Alert Badge</span></a>
+						</li>
+						<li>
+							<a href="#">Alert Name <span class="label label-info">Alert Badge</span></a>
+						</li>
+						<li>
+							<a href="#">Alert Name <span class="label label-warning">Alert Badge</span></a>
+						</li>
+						<li>
+							<a href="#">Alert Name <span class="label label-danger">Alert Badge</span></a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a href="#">View All</a>
+						</li>
+					</ul>
+				</li>
+			<?php endif; ?>
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $Auth->user('username'); ?> <b class="caret"></b></a>
 				<ul class="dropdown-menu">
@@ -131,52 +133,6 @@
 			</li>
 		</ul>
 		<!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
-
-		<?php
-		$leftItems = array(
-			array(
-				'label' => "Dashboard",
-				'url'   => "panel/index",
-				'icon'  => "fa-dashboard"
-			),
-			array(
-				'label' => "Deals",
-				'url'   => "deals/index",
-				'icon'  => "fa-handshake-o"
-			),
-//			array(
-//				'label'    => "Origination",
-//				'icon'     => "fa-phone-square",
-//				'subItems' => array(
-//					array(
-//						'label' => "Order New Number",
-//						'url'   => "did_client/orderNewNumber",
-//						'icon'  => "fa-phone-square"
-//					),
-//					array(
-//						'label' => "Trunk Groups",
-//						'url'   => "did_client/trunkGroups",
-//						'icon'  => "fa-cog"
-//					),
-//					array(
-//						'label' => "My DIDs",
-//						'url'   => "did_client/dids",
-//						'icon'  => "fa-phone-square"
-//					),
-//					array(
-//						'label' => "Reports",
-//						'url'   => "did_client/reports",
-//						'icon'  => "fa-bar-chart-o"
-//					),
-//					array(
-//						'label' => "CDR",
-//						'url'   => "did_client/cdr",
-//						'icon'  => "fa-phone-square"
-//					)
-//				)
-//			)
-		);
-		?>
 
 		<div class="collapse navbar-collapse navbar-ex1-collapse">
 			<ul class="nav navbar-nav side-nav">

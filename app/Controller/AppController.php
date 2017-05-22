@@ -30,7 +30,8 @@ App::uses('Controller', 'Controller');
  * @package		app.Controller
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller {
+class AppController extends Controller
+{
 
     public $cacheAction = false;
     public $components = array(
@@ -59,12 +60,74 @@ class AppController extends Controller {
         $userBalance = $this->User->find('first', array(
             'fields' => array('balance'),
             'conditions' => array(
-               'id' => $this->Auth->user('id')
+                'id' => $this->Auth->user('id')
             )
         ));
         $userBalance = empty($userBalance) ? 0 : $userBalance['User']['balance'];
 
+        $menuItems = $this->_getMenuItems($this->Auth->user('role'));
+
+        $this->set('leftItems', $menuItems);
         $this->set('userBalance', $userBalance);
         $this->set('Auth', $this->Auth);
+    }
+
+    private function _getMenuItems($role)
+    {
+        $leftItems = array();
+
+        if (isset($role)) {
+            switch ($role) {
+                case '1':
+                    $leftItems = array(
+                        array(
+                            'label' => "Dashboard",
+                            'url' => "panel/index",
+                            'icon' => "fa-dashboard"
+                        ),
+                        array(
+                            'label' => "Deals",
+                            'url' => "deals/index",
+                            'icon' => "fa-handshake-o"
+                        ),
+                    );
+                    break;
+                case '2':
+                    $leftItems = array(
+                        array(
+                            'label' => "Dashboard",
+                            'url' => "panel/index",
+                            'icon' => "fa-dashboard"
+                        ),
+                        array(
+                            'label' => "Deals",
+                            'url' => "arbiter/deals",
+                            'icon' => "fa-handshake-o"
+                        ),
+                    );
+                    break;
+                case '3':
+                    $leftItems = array(
+                        array(
+                            'label' => "Dashboard",
+                            'url' => "panel/index",
+                            'icon' => "fa-dashboard"
+                        ),
+                        array(
+                            'label' => "Deals",
+                            'url' => "admin/deals",
+                            'icon' => "fa-handshake-o"
+                        ),
+                        array(
+                            'label' => "Arbiters",
+                            'url'   => "admin/arbiters",
+                            'icon'  => "fa-eye"
+                        ),
+                    );
+                    break;
+            }
+        }
+
+        return $leftItems;
     }
 }

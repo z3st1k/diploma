@@ -61,7 +61,7 @@ ul.color-white, ul.color-white li, ul.color-white li a, .navbar-inverse ul.color
     position: relative;
 }
 
-.loginmodal-container input[type=text], input[type=password] {
+.loginmodal-container input[type=text], .loginmodal-container input[type=password] {
     height: 44px;
     font-size: 16px;
     width: 100%;
@@ -530,25 +530,25 @@ div.center-boxes div label, #deal-description{
     padding-right: 10px;
 }
 
-#deal-description::-webkit-scrollbar-track
-{
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 10px;
-    background-color: #F5F5F5;
-}
+/*#deal-description::-webkit-scrollbar-track*/
+/*{*/
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);*/
+    /*border-radius: 10px;*/
+    /*background-color: #F5F5F5;*/
+/*}*/
 
-#deal-description::-webkit-scrollbar
-{
-    width: 12px;
-    background-color: #F5F5F5;
-}
+/*#deal-description::-webkit-scrollbar*/
+/*{*/
+    /*width: 12px;*/
+    /*background-color: #F5F5F5;*/
+/*}*/
 
-#deal-description::-webkit-scrollbar-thumb
-{
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    background-color: #555;
-}
+/*#deal-description::-webkit-scrollbar-thumb*/
+/*{*/
+    /*border-radius: 10px;*/
+    /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);*/
+    /*background-color: #555;*/
+/*}*/
 
 div.buttons {
     margin-top: 20px;
