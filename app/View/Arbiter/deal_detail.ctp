@@ -3,11 +3,15 @@
         <h2><?php echo $deal['Deal']['name']; ?> (#<?php echo $deal['Deal']['id'] ?>)</h2>
     </div>
     <div class="row center-boxes">
-        <div class="col-md-4">
-            <strong><i class="fa fa-user"></i> Partner</strong> <br>
-            <label><?php echo $deal['User']['username']; ?></label>
+        <div class="col-md-3">
+            <strong><i class="fa fa-user"></i> Customer</strong> <br>
+            <label><?php echo $deal['CustomerUser']['username']; ?></label>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            <strong><i class="fa fa-send"></i> Seller</strong> <br>
+            <label><?php echo $deal['SellerUser']['username']; ?></label>
+        </div>
+        <div class="col-md-2">
             <strong><i class="fa fa-money"></i> Amount</strong> <br>
             <label><?php echo number_format($deal['Deal']['amount'], 2); ?> UAH</label>
         </div>
@@ -29,7 +33,39 @@
         </div>
         <div class="tab-content">
             <div class="tab-pane fade in active" id="home">
-                <?php echo $this->Deal->getHtmlAction($deal, $Auth->user('id')); ?>
+                <?php if ($deal['Deal']['statement'] != 6) { ?>
+                    <?php echo $this->Deal->getHtmlAction($deal, $Auth->user('id')); ?>
+                <?php } elseif (!$deal['Deal']['arbiterId']){ ?>
+                    <div class="alert alert-info">
+                        <strong>Info!</strong> After entering to deal you will decide the outcome of that deal.
+                    </div>
+                    <div class="buttons">
+                        <div class="col-md-12 text-center">
+                            <a class="btn btn-success" href="<?php echo $this->webroot;?>arbiter/enter_to_deal/<?php echo base64_encode($deal['Deal']['id']) ?>">
+                                <i class="fa fa-check"></i>
+                                Accept
+                            </a>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <div class="alert alert-info">
+                        <strong>Info!</strong> Choose in whose favor to resolve the deal.
+                    </div>
+                    <div class="buttons">
+                        <div class="col-md-6 text-right">
+                            <button class="btn btn-warning status-change" data-value="1">
+                                <i class="fa fa-user"></i>
+                                Customer
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-left">
+                            <button class="btn btn-warning status-change" data-value="2">
+                                <i class="fa fa-send"></i>
+                                Seller
+                            </button>
+                        </div>
+                    </div>
+                <?php } ?>
             </div>
         </div>
         <div class="messages">
@@ -80,6 +116,14 @@
 
 <script>
     $(function () {
+        $('.status-change').click(function () {
+            var status = $(this).data('value') == 1 ? 7 : 8;
+            var url = "<?php echo $this->webroot;?>";
+            var dealId = "<?php echo $deal['Deal']['id'] ?>";
+
+            changeDealStatus(url, dealId, status);
+        });
+
         $('#myTab li a').click(function () {
             return false;
         });

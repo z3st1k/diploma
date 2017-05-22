@@ -9,13 +9,21 @@
 class DealsController extends AppController
 {
 
-    var $uses = array('User', 'Deal');
+    var $uses = array('User', 'Deal', 'DealMessages');
     var $helpers = array('Deal');
+    var $arbiterActions = array('ajaxMessage', 'changeStatus');
+
+    public function beforeFilter()
+    {
+        parent::beforeFilter();
+
+        if ($this->Auth->user('role') != 1 && !(in_array($this->request->params['action'], $this->arbiterActions) && $this->Auth->user('role') == 2)) {
+            throw new NotFoundException();
+        }
+    }
 
     public function index()
     {
-        Configure::write('debug', 2);
-
         $deals = $this->Deal->find('all', array(
             'fields' => array(
                 'Deal.id',
@@ -66,7 +74,8 @@ class DealsController extends AppController
                 'customerId' => $this->request->data['partnerId'],
                 'description' => $this->request->data['description'],
                 'amount' => $this->request->data['amount'],
-                'dateCreate' => time()
+                'dateCreate' => time(),
+                'lastUpdate' => time()
             );
 
             $result = $this->Deal->save($saveData);
@@ -135,6 +144,25 @@ class DealsController extends AppController
             throw new NotFoundException();
         }
 
+        $messages = $this->DealMessages->find('all', array(
+            'fields' => array('DealMessages.message', 'DealMessages.senderId', 'DealMessages.date', 'User.name', 'User.surname', 'User.avatar'),
+            'conditions' => array(
+                'dealId' => $id
+            ),
+            'order' => 'DealMessages.id DESC',
+            'joins' => array(
+                array(
+                    'table' => 'users',
+                    'alias' => 'User',
+                    'type' => 'inner',
+                    'conditions' => array(
+                        '(User.id = DealMessages.senderId)'
+                    )
+                )
+            )
+        ));
+
+        $this->set('messages', $messages);
         $this->set('deal', $deal);
     }
 
@@ -151,28 +179,35 @@ class DealsController extends AppController
             );
             $id = $this->request->data['id'];
             $currentUserId = $this->Auth->user('id');
+            $status = $this->request->data['status'];
+            $conditions = array(
+                'id' => $id
+            );
+
+            if ($status != '7' && $status != '8') {
+                $conditions['OR'] = array(
+                    'sellerId' => $currentUserId,
+                    'customerId' => $currentUserId
+                );
+            }
 
             $deal = $this->Deal->find('first', array(
-                'conditions' => array(
-                    'id' => $id,
-                    'OR' => array(
-                        'sellerId' => $currentUserId,
-                        'customerId' => $currentUserId
-                    )
-                )
+                'conditions' => $conditions
             ));
 
             if (!empty($deal)) {
-                $status = $this->request->data['status'];
                 $customerActions = array('1', '2', '4', '5', '6');
                 $sellerActions = array('3', '6');
+                $arbiterActions = array('7', '8');
 
-                if (($currentUserId == $deal['Deal']['sellerId'] && in_array($status, $sellerActions) ||
-                        $currentUserId == $deal['Deal']['customerId'] && in_array($status, $customerActions)) &&
+                if (($currentUserId == $deal['Deal']['sellerId'] && in_array($status, $sellerActions)
+                        || $currentUserId == $deal['Deal']['customerId'] && in_array($status, $customerActions)
+                        || $currentUserId == $deal['Deal']['arbiterId'] && in_array($status, $arbiterActions)) &&
                     $status > $deal['Deal']['statement']
                 ) {
 
                     $saveResult = false;
+                    $deal['Deal']['lastUpdate'] = time();
 
                     switch ($status) {
                         case '1':
@@ -229,11 +264,24 @@ class DealsController extends AppController
                                 $saveResult = $this->Deal->save($deal);
                             }
                             break;
+
                         case '4':
 
                             if ($deal['Deal']['statement'] == 3) {
                                 $deal['Deal']['statement'] = 4;
-                                $saveResult = $this->Deal->save($deal);
+                                $this->Deal->begin();
+
+                                $save = $this->User->increaseBalance($deal['Deal']['sellerId'], $deal['Deal']['amount']);
+
+                                if ($save) {
+                                    $saveResult = $this->Deal->save($deal);
+
+                                    if ($saveResult) {
+                                        $this->Deal->commit();
+                                    } else {
+                                        $this->Deal->rollback();
+                                    }
+                                }
                             }
                             break;
                         case '5':
@@ -252,6 +300,44 @@ class DealsController extends AppController
                                 $saveResult = $this->Deal->save($deal);
                             }
                             break;
+                        case '7':
+
+                            if ($deal['Deal']['statement'] == 6) {
+                                $deal['Deal']['statement'] = 7;
+                                $this->Deal->begin();
+
+                                $save = $this->User->increaseBalance($deal['Deal']['customerId'], $deal['Deal']['amount']);
+
+                                if ($save) {
+                                    $saveResult = $this->Deal->save($deal);
+
+                                    if ($saveResult) {
+                                        $this->Deal->commit();
+                                    } else {
+                                        $this->Deal->rollback();
+                                    }
+                                }
+                            }
+                            break;
+                        case '8':
+
+                            if ($deal['Deal']['statement'] == 6) {
+                                $deal['Deal']['statement'] = 8;
+                                $this->Deal->begin();
+
+                                $save = $this->User->increaseBalance($deal['Deal']['sellerId'], $deal['Deal']['amount']);
+
+                                if ($save) {
+                                    $saveResult = $this->Deal->save($deal);
+
+                                    if ($saveResult) {
+                                        $this->Deal->commit();
+                                    } else {
+                                        $this->Deal->rollback();
+                                    }
+                                }
+                            }
+                            break;
                     }
 
                     if ($saveResult) {
@@ -266,5 +352,37 @@ class DealsController extends AppController
             return json_encode($return);
         }
         exit;
+    }
+
+    public function ajaxMessage()
+    {
+        Configure::write("debug", 0);
+        $this->autoRender = false;
+        $this->autoLayout = false;
+
+        if ($this->request->is('post')) {
+            $save = array(
+                'dealId' => $this->request->data['dealId'],
+                'senderId' => $this->Auth->user('id'),
+                'date' => time(),
+                'message' => $this->request->data['message']
+            );
+
+            $result = $this->DealMessages->save($save);
+
+            if ($result) {
+                $return = array(
+                    'code' => 201,
+                    'msg' => 'Successfully'
+                );
+            } else {
+                $return = array(
+                    'code' => 101,
+                    'msg' => 'Failed'
+                );
+            }
+
+            return json_encode($return);
+        }
     }
 }
