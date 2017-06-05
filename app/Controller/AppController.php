@@ -90,6 +90,28 @@ class AppController extends Controller
                             'url' => "deals/index",
                             'icon' => "fa-handshake-o"
                         ),
+                        array(
+                            'label' => 'Finances',
+                            'url' => "finances/index",
+                            'icon' => "fa-money",
+                            'subItems' => array(
+                                array(
+                                    'label' => 'Deposit',
+                                    'url' => "finances/pay",
+                                    'icon' => "fa-dollar"
+                                ),
+                                array(
+                                    'label' => 'Cash Out',
+                                    'url' => "finances/cash_out",
+                                    'icon' => "fa-dollar"
+                                ),
+                                array(
+                                    'label' => 'Transactions History',
+                                    'url' => "finances/history",
+                                    'icon' => "fa-bar-chart-o"
+                                )
+                            )
+                        )
                     );
                     break;
                 case '2':

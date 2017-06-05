@@ -10,7 +10,7 @@ App::uses('String', 'Utility');
 
 class AdminController extends AppController
 {
-    var $uses = array('User');
+    var $uses = array('User', 'Deal');
 
     public function beforeFilter()
     {
@@ -118,4 +118,12 @@ class AdminController extends AppController
         $this->redirect('/admin/arbiters');
     }
 
+    public function deals()
+    {
+        $data = $this->Deal->find('all', array(
+            'order' => 'id DESC'
+        ));
+
+        $this->set('data', $data);
+    }
 }

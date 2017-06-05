@@ -389,3 +389,4 @@ Cache::config('_cake_model_', array(
 ));
 
 Configure::write('uploadPath', APP . 'webroot');
+Configure::write('pbMerchant', 'q24xe51QxjSE040eB9h9t26Q5EodD324');

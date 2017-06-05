@@ -15,6 +15,7 @@
 	echo $this->Html->css('sb-admin');
 	echo $this->Html->css('notify');
 	echo $this->Html->css('full');
+	echo $this->Html->css('simple-donut');
 	?>
 	<link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
@@ -28,6 +29,7 @@
 	echo $this->Html->script('jquery.additional.validate');
 	echo $this->Html->script('notify');
 	echo $this->Html->script('jquery.additional');
+	echo $this->Html->script('simple-donut-jquery');
 	?>
 
 </head>
